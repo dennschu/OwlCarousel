@@ -83,7 +83,16 @@ if (typeof Object.create !== "function") {
             if (base.$elem.children().length === 0) {return false; }
             base.baseClass();
             base.eventTypes();
-            base.$userItems = base.$elem.children();
+
+            if( base.options.disableAutomaticWrapping
+                  && true === base.options.disableAutomaticWrapping
+                  && base.options.itemClass
+            ) {
+              base.$userItems = base.$elem.find( base.options.itemClass );
+            } else {
+              base.$userItems = base.$elem.children();
+            }
+
             base.itemsAmount = base.$userItems.length;
             base.wrapItems();
             base.$owlItems = base.$elem.find(".owl-item");
@@ -189,8 +198,15 @@ if (typeof Object.create !== "function") {
 
         wrapItems : function () {
             var base = this;
-            base.$userItems.wrapAll("<div class=\"owl-wrapper\">").wrap("<div class=\"owl-item\"></div>");
-            base.$elem.find(".owl-wrapper").wrap("<div class=\"owl-wrapper-outer\">");
+
+            if ( ! base.options.disableAutomaticWrapping
+                 || false === base.options.disableAutomaticWrapping
+            ) {
+              base.$userItems.wrapAll("<div class=\"owl-wrapper\">").wrap("<div class=\"owl-item\"></div>");
+              base.$userItems.wrap("<div class=\"owl-item\"></div>");
+              base.$elem.find(".owl-wrapper").wrap("<div class=\"owl-wrapper-outer\">");
+            }
+
             base.wrapperOuter = base.$elem.find(".owl-wrapper-outer");
             base.$elem.css("display", "block");
         },
@@ -1368,8 +1384,14 @@ if (typeof Object.create !== "function") {
         unWrap : function () {
             var base = this;
             if (base.$elem.children().length !== 0) {
-                base.$owlWrapper.unwrap();
-                base.$userItems.unwrap().unwrap();
+
+                if ( ! base.options.disableAutomaticWrapping
+                     || false === base.options.disableAutomaticWrapping
+                ) {
+                  base.$owlWrapper.unwrap();
+                  base.$userItems.unwrap().unwrap();
+                }
+
                 if (base.owlControls) {
                     base.owlControls.remove();
                 }
